@@ -19,6 +19,13 @@ const SUGGESTIONS = [
   "Faculty members",
 ];
 
+const TITLE_PHRASES = [
+  "AIML Department Assistant",
+  "Ask About Events",
+  "Explore Achievements",
+  "Discover Collaborations",
+];
+
 const ENDPOINT = "https://nonenigmatically-colloidal-natalie.ngrok-free.dev/ask";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -85,10 +92,10 @@ function Index() {
         <section className="flex-1 flex flex-col items-center justify-center px-4 py-12 animate-in fade-in duration-500">
           <div className="w-full max-w-2xl text-center">
             <h1
-              className="text-4xl sm:text-6xl tracking-tight text-white"
-              style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontWeight: 400 }}
+              className="text-4xl sm:text-6xl tracking-tight text-white min-h-[1.2em]"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
             >
-              AIML Department Assistant
+              <Typewriter phrases={TITLE_PHRASES} />
             </h1>
             <p className="mt-4 text-base sm:text-lg text-white/60">
               Ask anything about DSCE AI&amp;ML department activities
@@ -240,3 +247,37 @@ function Dots() {
     </div>
   );
 }
+
+function Typewriter({ phrases }: { phrases: string[] }) {
+  const [index, setIndex] = useState(0);
+  const [text, setText] = useState("");
+  const [phase, setPhase] = useState<"typing" | "deleting">("typing");
+
+  useEffect(() => {
+    const current = phrases[index];
+    let timeout: ReturnType<typeof setTimeout>;
+    if (phase === "typing") {
+      if (text.length < current.length) {
+        timeout = setTimeout(() => setText(current.slice(0, text.length + 1)), 70);
+      } else {
+        timeout = setTimeout(() => setPhase("deleting"), 1500);
+      }
+    } else {
+      if (text.length > 0) {
+        timeout = setTimeout(() => setText(current.slice(0, text.length - 1)), 35);
+      } else {
+        setIndex((i) => (i + 1) % phrases.length);
+        setPhase("typing");
+      }
+    }
+    return () => clearTimeout(timeout);
+  }, [text, phase, index, phrases]);
+
+  return (
+    <span>
+      {text}
+      <span className="inline-block w-[2px] h-[0.9em] align-middle bg-white ml-1 animate-pulse" />
+    </span>
+  );
+}
+
