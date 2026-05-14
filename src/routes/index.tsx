@@ -20,7 +20,7 @@ const SUGGESTIONS = [
 ];
 
 const TITLE_PHRASES = [
-  "AIML Department Assistant",
+  "AIML Academic Assistant",
   "Ask About Events",
   "Explore Achievements",
   "Discover Collaborations",
@@ -92,7 +92,7 @@ function Index() {
         <section className="flex-1 flex flex-col items-center justify-center px-4 py-12 animate-in fade-in duration-500">
           <div className="w-full max-w-2xl text-center">
             <h1
-              className="text-2xl sm:text-5xl md:text-6xl tracking-tight text-white whitespace-nowrap overflow-hidden text-ellipsis"
+              className="text-xl sm:text-4xl md:text-5xl tracking-tight text-white whitespace-nowrap overflow-visible"
               style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600, height: "1.2em", lineHeight: "1.2em" }}
             >
               <Typewriter phrases={TITLE_PHRASES} />
