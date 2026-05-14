@@ -81,7 +81,7 @@ function Index() {
               <span>Back</span>
             </button>
             <div className="flex-1 text-center text-sm text-white/60 truncate">
-              AIML Department Assistant
+              AIML Academic Assistant
             </div>
             <div className="w-14" />
           </div>
