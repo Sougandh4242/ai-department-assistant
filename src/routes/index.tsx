@@ -19,7 +19,7 @@ const SUGGESTIONS = [
   "Faculty members",
 ];
 
-const ENDPOINT = "https://nonenigmatically-colloidal-natalie.ngrok-free.dev/";
+const ENDPOINT = "https://nonenigmatically-colloidal-natalie.ngrok-free.dev/ask";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
