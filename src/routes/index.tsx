@@ -247,3 +247,37 @@ function Dots() {
     </div>
   );
 }
+
+function Typewriter({ phrases }: { phrases: string[] }) {
+  const [index, setIndex] = useState(0);
+  const [text, setText] = useState("");
+  const [phase, setPhase] = useState<"typing" | "deleting">("typing");
+
+  useEffect(() => {
+    const current = phrases[index];
+    let timeout: ReturnType<typeof setTimeout>;
+    if (phase === "typing") {
+      if (text.length < current.length) {
+        timeout = setTimeout(() => setText(current.slice(0, text.length + 1)), 70);
+      } else {
+        timeout = setTimeout(() => setPhase("deleting"), 1500);
+      }
+    } else {
+      if (text.length > 0) {
+        timeout = setTimeout(() => setText(current.slice(0, text.length - 1)), 35);
+      } else {
+        setIndex((i) => (i + 1) % phrases.length);
+        setPhase("typing");
+      }
+    }
+    return () => clearTimeout(timeout);
+  }, [text, phase, index, phrases]);
+
+  return (
+    <span>
+      {text}
+      <span className="inline-block w-[2px] h-[0.9em] align-middle bg-white ml-1 animate-pulse" />
+    </span>
+  );
+}
+
