@@ -19,6 +19,13 @@ const SUGGESTIONS = [
   "Faculty members",
 ];
 
+const TITLE_PHRASES = [
+  "AIML Department Assistant",
+  "Ask About Events",
+  "Explore Achievements",
+  "Discover Collaborations",
+];
+
 const ENDPOINT = "https://nonenigmatically-colloidal-natalie.ngrok-free.dev/ask";
 
 type Msg = { role: "user" | "assistant"; content: string };
