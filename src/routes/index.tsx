@@ -92,10 +92,10 @@ function Index() {
         <section className="flex-1 flex flex-col items-center justify-center px-4 py-12 animate-in fade-in duration-500">
           <div className="w-full max-w-2xl text-center">
             <h1
-              className="text-4xl sm:text-6xl tracking-tight text-white"
-              style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontWeight: 400 }}
+              className="text-4xl sm:text-6xl tracking-tight text-white min-h-[1.2em]"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
             >
-              AIML Department Assistant
+              <Typewriter phrases={TITLE_PHRASES} />
             </h1>
             <p className="mt-4 text-base sm:text-lg text-white/60">
               Ask anything about DSCE AI&amp;ML department activities
