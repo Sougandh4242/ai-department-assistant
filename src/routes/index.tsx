@@ -28,7 +28,9 @@ const TITLE_PHRASES = [
 
 const ENDPOINT = "https://nonenigmatically-colloidal-natalie.ngrok-free.dev/ask";
 
-type Msg = { role: "user" | "assistant"; content: string };
+type Msg = { role: "user" | "assistant"; content: string; images?: string[] };
+
+const IMAGE_BASE = "https://nonenigmatically-colloidal-natalie.ngrok-free.dev";
 
 function Index() {
   const [input, setInput] = useState("");
@@ -56,7 +58,8 @@ function Index() {
       });
       const data = await res.json().catch(() => ({}));
       const answer = data?.answer ?? "Sorry, I couldn't get a response.";
-      setMessages((m) => [...m, { role: "assistant", content: String(answer) }]);
+      const images = Array.isArray(data?.images) ? (data.images as string[]) : [];
+      setMessages((m) => [...m, { role: "assistant", content: String(answer), images }]);
     } catch {
       setMessages((m) => [...m, { role: "assistant", content: "Network error. Please try again." }]);
     } finally {
@@ -219,8 +222,22 @@ function Bubble({ msg }: { msg: Msg }) {
   return (
     <div className="flex items-end gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <BotAvatar />
-      <div className="max-w-[85%] sm:max-w-[75%] px-4 py-3 rounded-2xl rounded-bl-sm bg-[#1a1a1a] text-white/95 whitespace-pre-wrap break-words">
-        {msg.content}
+      <div className="max-w-[85%] sm:max-w-[75%] flex flex-col gap-3">
+        <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-[#1a1a1a] text-white/95 whitespace-pre-wrap break-words">
+          {msg.content}
+        </div>
+        {msg.images && msg.images.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {msg.images.map((src, i) => {
+              const url = src.startsWith("http") ? src : `${IMAGE_BASE}${src.startsWith("/") ? "" : "/"}${src}`;
+              return (
+                <a key={i} href={url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-lg border border-white/10 bg-[#1a1a1a]">
+                  <img src={url} alt={`Result ${i + 1}`} loading="lazy" className="w-full h-32 sm:h-36 object-cover hover:scale-105 transition-transform" />
+                </a>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
