@@ -1,8 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { ArrowUp, ArrowLeft, Bot } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -226,23 +224,7 @@ function Bubble({ msg }: { msg: Msg }) {
       <BotAvatar />
       <div className="max-w-[85%] sm:max-w-[75%] flex flex-col gap-3">
         <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-[#1a1a1a] text-white/95 break-words text-[15px] leading-relaxed">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              p: ({ node, ...props }) => <p className="my-2 first:mt-0 last:mb-0" {...props} />,
-              h1: ({ node, ...props }) => <h2 className="text-lg font-bold text-white mt-3 mb-2 first:mt-0" {...props} />,
-              h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-white mt-3 mb-2 first:mt-0" {...props} />,
-              h3: ({ node, ...props }) => <h3 className="text-base font-bold text-white mt-3 mb-2 first:mt-0" {...props} />,
-              ul: ({ node, ...props }) => <ul className="list-disc pl-5 my-2 space-y-1.5 marker:text-[#ff6b35]" {...props} />,
-              ol: ({ node, ...props }) => <ol className="list-decimal pl-5 my-2 space-y-1.5 marker:text-[#ff6b35]" {...props} />,
-              li: ({ node, ...props }) => <li className="pl-1 leading-relaxed" {...props} />,
-              strong: ({ node, ...props }) => <strong className="font-semibold text-white" {...props} />,
-              a: ({ node, ...props }) => <a className="text-[#ff6b35] underline underline-offset-2 hover:text-[#ff7d4d]" target="_blank" rel="noreferrer" {...props} />,
-              code: ({ node, ...props }) => <code className="px-1.5 py-0.5 rounded bg-white/10 text-[13px]" {...props} />,
-            }}
-          >
-            {msg.content}
-          </ReactMarkdown>
+          <Markdown text={msg.content} />
         </div>
         {msg.images && msg.images.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -315,4 +297,103 @@ function Typewriter({ phrases }: { phrases: string[] }) {
     </span>
   );
 }
+
+function renderInline(text: string, keyPrefix: string) {
+  // Bold: **text**, links: [text](url), inline code: `code`
+  const nodes: React.ReactNode[] = [];
+  const regex = /\*\*([^*]+)\*\*|\[([^\]]+)\]\(([^)]+)\)|`([^`]+)`/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let i = 0;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(text.slice(lastIndex, match.index));
+    }
+    const key = `${keyPrefix}-${i++}`;
+    if (match[1] !== undefined) {
+      nodes.push(<strong key={key} className="font-semibold text-white">{match[1]}</strong>);
+    } else if (match[2] !== undefined && match[3] !== undefined) {
+      nodes.push(
+        <a key={key} href={match[3]} target="_blank" rel="noreferrer" className="text-[#ff6b35] underline underline-offset-2 hover:text-[#ff7d4d]">{match[2]}</a>
+      );
+    } else if (match[4] !== undefined) {
+      nodes.push(<code key={key} className="px-1.5 py-0.5 rounded bg-white/10 text-[13px]">{match[4]}</code>);
+    }
+    lastIndex = regex.lastIndex;
+  }
+  if (lastIndex < text.length) nodes.push(text.slice(lastIndex));
+  return nodes;
+}
+
+function Markdown({ text }: { text: string }) {
+  const lines = text.replace(/\r\n/g, "\n").split("\n");
+  type Block =
+    | { type: "p"; lines: string[] }
+    | { type: "ul" | "ol"; items: string[] }
+    | { type: "h"; level: 1 | 2 | 3; text: string };
+  const blocks: Block[] = [];
+  let cur: Block | null = null;
+  const flush = () => { if (cur) { blocks.push(cur); cur = null; } };
+
+  for (const raw of lines) {
+    const line = raw.trimEnd();
+    if (!line.trim()) { flush(); continue; }
+    const h = /^(#{1,3})\s+(.*)$/.exec(line);
+    const ul = /^\s*[-•*]\s+(.*)$/.exec(line);
+    const ol = /^\s*\d+\.\s+(.*)$/.exec(line);
+    if (h) {
+      flush();
+      blocks.push({ type: "h", level: h[1].length as 1 | 2 | 3, text: h[2] });
+    } else if (ul) {
+      if (!cur || cur.type !== "ul") { flush(); cur = { type: "ul", items: [] }; }
+      cur.items.push(ul[1]);
+    } else if (ol) {
+      if (!cur || cur.type !== "ol") { flush(); cur = { type: "ol", items: [] }; }
+      cur.items.push(ol[1]);
+    } else {
+      if (!cur || cur.type !== "p") { flush(); cur = { type: "p", lines: [] }; }
+      cur.lines.push(line);
+    }
+  }
+  flush();
+
+  return (
+    <>
+      {blocks.map((b, i) => {
+        if (b.type === "h") {
+          const cls = b.level === 3 ? "text-base font-bold text-white mt-3 mb-2 first:mt-0" : "text-lg font-bold text-white mt-3 mb-2 first:mt-0";
+          return <h2 key={i} className={cls}>{renderInline(b.text, `h-${i}`)}</h2>;
+        }
+        if (b.type === "ul") {
+          return (
+            <ul key={i} className="list-disc pl-5 my-2 space-y-1.5 marker:text-[#ff6b35]">
+              {b.items.map((it, j) => <li key={j} className="pl-1 leading-relaxed">{renderInline(it, `ul-${i}-${j}`)}</li>)}
+            </ul>
+          );
+        }
+        if (b.type === "ol") {
+          return (
+            <ol key={i} className="list-decimal pl-5 my-2 space-y-1.5 marker:text-[#ff6b35]">
+              {b.items.map((it, j) => <li key={j} className="pl-1 leading-relaxed">{renderInline(it, `ol-${i}-${j}`)}</li>)}
+            </ol>
+          );
+        }
+        if (b.type === "p") {
+          return (
+            <p key={i} className="my-2 first:mt-0 last:mb-0">
+              {b.lines.map((ln, j) => (
+                <Fragment key={j}>
+                  {j > 0 && <br />}
+                  {renderInline(ln, `p-${i}-${j}`)}
+                </Fragment>
+              ))}
+            </p>
+          );
+        }
+        return null;
+      })}
+    </>
+  );
+}
+
 
