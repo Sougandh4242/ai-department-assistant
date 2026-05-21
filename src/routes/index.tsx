@@ -225,10 +225,24 @@ function Bubble({ msg }: { msg: Msg }) {
     <div className="flex items-end gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <BotAvatar />
       <div className="max-w-[85%] sm:max-w-[75%] flex flex-col gap-3">
-        <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-[#1a1a1a] text-white/95 break-words">
-          <div className="prose prose-invert prose-sm max-w-none prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-1.5 prose-headings:mt-3 prose-headings:mb-2 prose-strong:text-white prose-strong:font-semibold">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
-          </div>
+        <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-[#1a1a1a] text-white/95 break-words text-[15px] leading-relaxed">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              p: ({ node, ...props }) => <p className="my-2 first:mt-0 last:mb-0" {...props} />,
+              h1: ({ node, ...props }) => <h2 className="text-lg font-bold text-white mt-3 mb-2 first:mt-0" {...props} />,
+              h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-white mt-3 mb-2 first:mt-0" {...props} />,
+              h3: ({ node, ...props }) => <h3 className="text-base font-bold text-white mt-3 mb-2 first:mt-0" {...props} />,
+              ul: ({ node, ...props }) => <ul className="list-disc pl-5 my-2 space-y-1.5 marker:text-[#ff6b35]" {...props} />,
+              ol: ({ node, ...props }) => <ol className="list-decimal pl-5 my-2 space-y-1.5 marker:text-[#ff6b35]" {...props} />,
+              li: ({ node, ...props }) => <li className="pl-1 leading-relaxed" {...props} />,
+              strong: ({ node, ...props }) => <strong className="font-semibold text-white" {...props} />,
+              a: ({ node, ...props }) => <a className="text-[#ff6b35] underline underline-offset-2 hover:text-[#ff7d4d]" target="_blank" rel="noreferrer" {...props} />,
+              code: ({ node, ...props }) => <code className="px-1.5 py-0.5 rounded bg-white/10 text-[13px]" {...props} />,
+            }}
+          >
+            {msg.content}
+          </ReactMarkdown>
         </div>
         {msg.images && msg.images.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
