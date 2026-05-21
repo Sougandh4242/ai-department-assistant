@@ -378,16 +378,19 @@ function Markdown({ text }: { text: string }) {
             </ol>
           );
         }
-        return (
-          <p key={i} className="my-2 first:mt-0 last:mb-0">
-            {b.lines.map((ln, j) => (
-              <Fragment key={j}>
-                {j > 0 && <br />}
-                {renderInline(ln, `p-${i}-${j}`)}
-              </Fragment>
-            ))}
-          </p>
-        );
+        if (b.type === "p") {
+          return (
+            <p key={i} className="my-2 first:mt-0 last:mb-0">
+              {b.lines.map((ln, j) => (
+                <Fragment key={j}>
+                  {j > 0 && <br />}
+                  {renderInline(ln, `p-${i}-${j}`)}
+                </Fragment>
+              ))}
+            </p>
+          );
+        }
+        return null;
       })}
     </>
   );
