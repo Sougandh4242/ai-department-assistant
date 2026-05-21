@@ -225,8 +225,10 @@ function Bubble({ msg }: { msg: Msg }) {
     <div className="flex items-end gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <BotAvatar />
       <div className="max-w-[85%] sm:max-w-[75%] flex flex-col gap-3">
-        <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-[#1a1a1a] text-white/95 whitespace-pre-wrap break-words">
-          {msg.content}
+        <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-[#1a1a1a] text-white/95 break-words">
+          <div className="prose prose-invert prose-sm max-w-none prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-1.5 prose-headings:mt-3 prose-headings:mb-2 prose-strong:text-white prose-strong:font-semibold">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+          </div>
         </div>
         {msg.images && msg.images.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
