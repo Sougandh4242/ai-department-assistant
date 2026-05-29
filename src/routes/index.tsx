@@ -30,7 +30,7 @@ const ENDPOINT = `${import.meta.env.VITE_API_BASE_URL}/ask`;
 
 type Msg = { role: "user" | "assistant"; content: string; images?: string[] };
 
-const IMAGE_BASE = "https://nonenigmatically-colloidal-natalie.ngrok-free.dev";
+const IMAGE_BASE = import.meta.env.VITE_API_BASE_URL;
 
 function Index() {
   const [input, setInput] = useState("");
