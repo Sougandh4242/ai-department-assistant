@@ -26,7 +26,7 @@ const TITLE_PHRASES = [
   "Discover Collaborations",
 ];
 
-const ENDPOINT = "https://nonenigmatically-colloidal-natalie.ngrok-free.dev/ask";
+const ENDPOINT = `${import.meta.env.VITE_API_BASE_URL}/ask`;
 
 type Msg = { role: "user" | "assistant"; content: string; images?: string[] };
 
