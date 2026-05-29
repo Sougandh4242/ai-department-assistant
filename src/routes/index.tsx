@@ -190,7 +190,7 @@ function ChatInput({
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Ask anything…"
+        placeholder="Ask about the AIML Dept. @ DSCE"
         className={`flex-1 bg-transparent outline-none text-white placeholder:text-white/40 ${
           large ? "text-base sm:text-lg py-3" : "text-base py-2.5"
         }`}
